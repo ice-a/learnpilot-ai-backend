@@ -1,0 +1,12 @@
+﻿{
+    "id":  "fix-forgot-password-500",
+    "title":  "修复找回密码 500 与未登录状态 401 噪声请求",
+    "status":  "completed",
+    "complexity":  "M",
+    "risk":  "high",
+    "domain":  "backend",
+    "currentPhase":  "completed",
+    "nextAction":  "task completed, archive",
+    "createdAt":  "2026-05-22T02:13:21Z",
+    "branch":  "main"
+}

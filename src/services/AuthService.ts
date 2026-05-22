@@ -286,11 +286,19 @@ export class AuthService {
 
     const appUrl = process.env.APP_BASE_URL || 'http://localhost:5173'
     const resetUrl = `${appUrl}/auth/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`
-    await this.emailService.send({
-      to: email,
-      subject: '重置密码',
-      text: `请点击以下链接重置密码（30 分钟内有效）：\n${resetUrl}`
-    })
+    try {
+      await this.emailService.send({
+        to: email,
+        subject: '重置密码',
+        text: `请点击以下链接重置密码（30 分钟内有效）：\n${resetUrl}`
+      })
+    } catch (error) {
+      // Keep forgot-password response stable to avoid leaking account state and SMTP internals.
+      console.warn('[AuthService] Password reset email send failed', {
+        email,
+        error: error instanceof Error ? error.message : String(error)
+      })
+    }
   }
 
   async resetPassword(params: { email: string; token: string; newPassword: string }): Promise<void> {
@@ -540,7 +548,7 @@ export class AuthService {
 
     await this.emailService.send({
       to: user.email,
-      subject: '注册成功，欢迎加入 AI 能力工坊',
+      subject: '【LearnPilot AI】注册成功，立即开启智能学习',
       text
     })
   }
