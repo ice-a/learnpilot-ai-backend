@@ -1,5 +1,5 @@
 import express from 'express'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import mongoose from 'mongoose'
@@ -25,13 +25,33 @@ app.use(helmet({
   crossOriginResourcePolicy: false,
 }))
 
-// CORS配置
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://yourdomain.com']
-    : ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: true
-}))
+// CORS 配置
+const defaultProdOrigins = ['https://learn.020417.xyz', 'https://learn-api.020417.xyz']
+const defaultDevOrigins = ['http://localhost:5173', 'http://localhost:3000']
+const configuredOrigins = (process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean)
+const allowedOrigins = configuredOrigins.length > 0
+  ? configuredOrigins
+  : (process.env.NODE_ENV === 'production' ? defaultProdOrigins : defaultDevOrigins)
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+      return
+    }
+
+    callback(new Error(`CORS not allowed for origin: ${origin}`))
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}
+
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 
 // 速率限制
 const limiter = rateLimit({

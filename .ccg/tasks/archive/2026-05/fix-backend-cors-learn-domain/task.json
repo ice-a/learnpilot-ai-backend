@@ -1,0 +1,12 @@
+﻿{
+    "id":  "fix-backend-cors-learn-domain",
+    "title":  "后端增加并加固 learn 域名 CORS 配置",
+    "status":  "completed",
+    "complexity":  "S",
+    "risk":  "high",
+    "domain":  "backend",
+    "currentPhase":  "completed",
+    "nextAction":  "task completed, archive",
+    "createdAt":  "2026-05-22T01:13:40Z",
+    "branch":  "main"
+}
